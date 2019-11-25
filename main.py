@@ -15,6 +15,7 @@ zombie_image = pygame.image.load('zombie.png')
 
 start_x = 350
 start_y = 150
+shoot_delay = 500
 
 debug_mode = False
 
@@ -90,10 +91,12 @@ class Player(Entity):
         Entity.__init__(self, x, y, player_image, (75, 95))
         rect = player_image.get_rect()
         self.action_point = pygame.math.Vector2(280 - rect.center[0], 110 - rect.center[1])
+        self.shoot_timeout = 0
         
     def shoot(self):
         rotated_offset = self.action_point.rotate(self.angle)
         bullets.append(BulletRay(self.x + rotated_offset.x, self.y + rotated_offset.y, self.angle))
+        self.shoot_timeout = shoot_delay
         
     def draw(self):
         Entity.draw(self)
@@ -118,8 +121,6 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            player.shoot()
         elif event.type == pygame.KEYUP and event.key == pygame.K_F1:
             debug_mode = not debug_mode
             
@@ -128,6 +129,11 @@ while not done:
     if pressed[pygame.K_s]: player.y += PLAYER_SPEED
     if pressed[pygame.K_a]: player.x -= PLAYER_SPEED
     if pressed[pygame.K_d]: player.x += PLAYER_SPEED
+    
+    if player.shoot_timeout > 0:
+        player.shoot_timeout -= clock.get_time()
+    elif pygame.mouse.get_pressed()[0]:
+        player.shoot()
 
     (mouse_x, mouse_y) = pygame.mouse.get_pos()
     
