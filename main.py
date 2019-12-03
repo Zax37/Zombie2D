@@ -5,8 +5,10 @@ pygame.init()
 pygame.display.set_caption("Zombie2D")
 screen = pygame.display.set_mode((800, 600))
 clock = pygame.time.Clock()
+pygame.font.init()
+DEFAULT_FONT = pygame.font.SysFont('Consolas', 12)
 
-world = World(screen, start_x=150, start_y=100)
+world = World(screen, start_x=150, start_y=100, debug_font=DEFAULT_FONT)
 
 done = False
 

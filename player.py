@@ -16,6 +16,7 @@ class Player(Entity):
         rect = PLAYER_IMAGE.get_rect()
         self.action_point = pygame.math.Vector2(280 - rect.center[0], 110 - rect.center[1])
         self.shoot_timeout = 0
+        self.health = 100
 
     def shoot(self):
         action_point_rotated = self.action_point.rotate(self.angle)
