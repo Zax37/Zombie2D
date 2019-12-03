@@ -11,15 +11,21 @@ DEFAULT_FONT = pygame.font.SysFont('Consolas', 12)
 world = World(screen, start_x=150, start_y=100, debug_font=DEFAULT_FONT)
 
 done = False
-
 while not done:
+    step_by_step_continue = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
         elif event.type == pygame.KEYUP and event.key == pygame.K_F1:
             world.debug_mode = not world.debug_mode
+        elif event.type == pygame.KEYUP and event.key == pygame.K_F2:
+            world.step_by_step = True
+            step_by_step_continue = True
 
-    world.update(clock.get_time())
+    if not world.step_by_step or step_by_step_continue:
+        world.update(clock.get_time())
+
     world.draw()
     pygame.display.flip()
+
     clock.tick(60)

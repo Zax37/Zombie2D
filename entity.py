@@ -1,7 +1,6 @@
 import math
 import pygame
 import random
-from shapely.geometry import Point
 
 COLOR_WHITE = (255, 255, 255)
 BODY_RADIUS = 50
@@ -19,12 +18,10 @@ class Entity:
         self.max_speed = max_speed
         self.rotation_speed = rotation_speed
         self.wander_target = pygame.math.Vector2(0, 0)
+        self.size = BODY_RADIUS
 
         rect = image.get_rect()
         self.offset = pygame.math.Vector2(pivot[0] - rect.center[0], pivot[1] - rect.center[1])
-
-    def get_boundary(self):
-        return Point(self.pos.x, self.pos.y).buffer(BODY_RADIUS).boundary
 
     def draw(self):
         rotated_image = pygame.transform.rotozoom(self.image, -self.angle, self.world.camera.zoom)

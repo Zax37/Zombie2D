@@ -16,6 +16,7 @@ class World:
         self.obstacles = [Obstacle(self, 0, 0, 100)]
         self.bullets = []
         self.debug_mode = False
+        self.step_by_step = False
 
     def update(self, time_elapsed):
         self.player.update(time_elapsed)

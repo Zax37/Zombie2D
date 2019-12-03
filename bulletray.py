@@ -1,7 +1,6 @@
 import math
 import pygame
 import pygame.gfxdraw
-from shapely.geometry import LineString
 
 
 class BulletRay:
@@ -13,38 +12,44 @@ class BulletRay:
         self.target = pygame.math.Vector2(math.floor(source.x + self.length * math.cos(rads)),
                                           math.floor(source.y + self.length * math.sin(rads)))
         self.opacity = 255
-        self.line = LineString([(self.source.x, self.source.y), (self.target.x, self.target.y)])
 
         for obstacle in world.obstacles:
-            self.limit_by_intersections(obstacle)
+            intersection_point = self.get_intersection_point(obstacle)
+            if intersection_point:
+                self.target = intersection_point
+                self.length = (self.target - self.source).length()
 
-        close_enemy = False
+        close_enemy = None
 
         for enemy in world.enemies:
             if enemy.is_dead():
                 continue
 
-            intersections = self.limit_by_intersections(enemy)
-            if intersections:
+            intersection_point = self.get_intersection_point(enemy)
+            if intersection_point:
+                self.target = intersection_point
+                self.length = (self.target - self.source).length()
                 close_enemy = enemy
 
-        if close_enemy:
+        if close_enemy is not None:
             close_enemy.kill()
 
-    def limit_by_intersections(self, target):
-        intersection = target.get_boundary().intersection(self.line)
-        if intersection.geoms:
-            for geom in intersection.geoms:
-                for coords in geom.coords:
-                    target = pygame.math.Vector2(coords[0], coords[1])
-                    from_source = target - self.source
-                    length = from_source.length()
-                    if length < self.length:
-                        self.length = length
-                        self.target = target
-                        self.line = LineString([(self.source.x, self.source.y), (self.target.x, self.target.y)])
+    def get_intersection_point(self, target):
+        dir_vector = (self.target - self.source).normalize()
+        dist = (self.source - target.pos)
 
-        return len(list(intersection.geoms)) > 0
+        if dist.length() > self.length:
+            return None
+
+        lf = dir_vector.dot(dist)
+        s = target.size ** 2 - dist.length_squared() + lf ** 2
+
+        if s < 0:
+            return None
+
+        s = math.sqrt(s)
+
+        return self.source + dir_vector * -(s + lf)
 
     def update(self, time_elapsed):
         self.opacity -= time_elapsed * 0.5
