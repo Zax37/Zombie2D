@@ -15,6 +15,7 @@ class World:
         self.enemies = list([Zombie(self, (350 * i) % 1000, 600 + math.floor(i / 4) * 300) for i in range(1, 12)])
         self.obstacles = [Obstacle(self, 0, 0, 100)]
         self.bullets = []
+        self.misc = []
         self.debug_mode = False
         self.step_by_step = False
 
@@ -26,6 +27,8 @@ class World:
 
     def draw(self):
         self.screen.fill(COLOR_BACKGROUND)
+        for entity in self.misc:
+            entity.draw()
         for enemy in self.enemies:
             enemy.draw()
         self.player.draw()

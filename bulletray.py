@@ -22,9 +22,6 @@ class BulletRay:
         close_enemy = None
 
         for enemy in world.enemies:
-            if enemy.is_dead():
-                continue
-
             intersection_point = self.get_intersection_point(enemy)
             if intersection_point:
                 self.target = intersection_point
@@ -35,6 +32,9 @@ class BulletRay:
             close_enemy.kill()
 
     def get_intersection_point(self, target):
+        if target.pos.distance_to(self.source) < target.size:
+            return self.source
+
         dir_vector = (self.target - self.source).normalize()
         dist = (self.source - target.pos)
 
@@ -48,6 +48,9 @@ class BulletRay:
             return None
 
         s = math.sqrt(s)
+
+        if s + lf > 0:
+            return None
 
         return self.source + dir_vector * -(s + lf)
 

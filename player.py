@@ -1,6 +1,6 @@
 import pygame
+from actor import Actor
 from bulletray import BulletRay
-from entity import Entity
 
 PLAYER_IMAGE = pygame.image.load('player.png')
 PLAYER_MAX_SPEED = 10
@@ -10,9 +10,9 @@ COLOR_WHITE = (255, 255, 255)
 SHOOT_DELAY = 500
 
 
-class Player(Entity):
+class Player(Actor):
     def __init__(self, world, x, y):
-        Entity.__init__(self, world, x, y, PLAYER_IMAGE, (75, 95), PLAYER_MAX_SPEED, ROTATION_SPEED)
+        Actor.__init__(self, world, x, y, PLAYER_IMAGE, (75, 95), PLAYER_MAX_SPEED, ROTATION_SPEED)
         rect = PLAYER_IMAGE.get_rect()
         self.action_point = pygame.math.Vector2(280 - rect.center[0], 110 - rect.center[1])
         self.shoot_timeout = 0
@@ -53,7 +53,7 @@ class Player(Entity):
         self.world.camera.move_towards(center)
 
     def draw(self):
-        Entity.draw(self)
+        Actor.draw(self)
         if self.world.debug_mode:
             action_point_rotated = self.action_point.rotate(self.angle)
             point = self.world.camera.offset(self.pos + action_point_rotated)
