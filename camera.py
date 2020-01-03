@@ -11,6 +11,12 @@ class Camera:
     def offset(self, pos):
         return (pos - self.pos) * self.zoom + self.screen_center
 
+    def offset_rect(self, rect):
+        ret = [r for r in rect]
+        ret[0] = (ret[0] - self.pos[0]) * self.zoom + self.screen_center[0]
+        ret[1] = (ret[1] - self.pos[1]) * self.zoom + self.screen_center[1]
+        return pygame.Rect(ret)
+
     def move_towards(self, target):
         self.pos *= 9
         self.pos += target

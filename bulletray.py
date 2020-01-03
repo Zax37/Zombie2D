@@ -35,6 +35,9 @@ class BulletRay:
         if target.pos.distance_to(self.source) < target.size:
             return self.source
 
+        if self.target.distance_to(self.source) <= 0:
+            return None
+
         dir_vector = (self.target - self.source).normalize()
         dist = (self.source - target.pos)
 

@@ -1,10 +1,12 @@
 import math
+import pygame
 from camera import Camera
 from obstacle import Obstacle
 from player import Player
 from zombie import Zombie
 
 COLOR_BACKGROUND = (10, 40, 10)
+COLOR_WALL = (120, 30, 30)
 
 class World:
     def __init__(self, screen, start_x, start_y, debug_font):
@@ -27,6 +29,7 @@ class World:
 
     def draw(self):
         self.screen.fill(COLOR_BACKGROUND)
+        pygame.draw.rect(self.screen, COLOR_WALL, self.camera.offset_rect((0, 0, 1000, 1000)), 10)
         for entity in self.misc:
             entity.draw()
         for enemy in self.enemies:
