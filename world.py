@@ -25,8 +25,11 @@ class World:
         self.misc = []
 
     def reset_camera(self):
-        self.camera.pos = pygame.math.Vector2(self.world_size[0] / 2, self.world_size[1] / 2) if self.debug_mode \
-            else pygame.math.Vector2(self.start_pos[0], self.start_pos[1])
+        if self.debug_mode:
+            self.camera.pos = pygame.math.Vector2(self.world_size[0] / 2, self.world_size[1] / 2)
+            self.camera.zoom = self.screen.get_width() / (self.world_size[0] + 150)
+        else:
+            self.camera.pos = pygame.math.Vector2(self.player.pos)
 
     def update(self, time_elapsed):
         self.player.update(time_elapsed)
@@ -37,7 +40,7 @@ class World:
     def draw(self):
         self.screen.fill(COLOR_BACKGROUND)
         wall_rect = (0, 0) + tuple([self.camera.zoom * x for x in self.world_size])
-        pygame.draw.rect(self.screen, COLOR_WALL, self.camera.offset_rect(wall_rect), int(10 * self.camera.zoom))
+        pygame.draw.rect(self.screen, COLOR_WALL, self.camera.offset_rect(wall_rect), 1 + int(8 * self.camera.zoom))
         for entity in self.misc:
             entity.draw()
         for enemy in self.enemies:
