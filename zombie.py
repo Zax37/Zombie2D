@@ -4,8 +4,9 @@ from entity import Entity
 
 ZOMBIE_IMAGE = pygame.image.load('zombie.png')
 DEAD_IMAGE = pygame.image.load('blood.png')
-ZOMBIE_MAX_SPEED = 2
+ZOMBIE_MAX_SPEED = 3
 ROTATION_SPEED = .1
+COLOR_RED = (255, 0, 0)
 COLOR_WHITE = (255, 255, 255)
 
 
@@ -13,12 +14,21 @@ class Zombie(Actor):
     def __init__(self, world, x, y):
         Actor.__init__(self, world, x, y, ZOMBIE_IMAGE, (90, 125), ZOMBIE_MAX_SPEED, ROTATION_SPEED)
 
-    def set_state(self, state):
-        self.state = state
-        self.debug_text = self.world.debug_font.render(str(self.state), False, (0, 0, 0))
-
     def update(self, time_elapsed):
-        direction = self.pursuit(self.world.player)
+        direction = self.wander()
+
+        detection_length = self.get_detection_box_length()
+        dist_from_player = (self.pos - self.world.player.pos).length()
+
+        self.world.player.tagged = False
+        if dist_from_player < detection_length:
+            self.world.player.tagged = True
+            evade_factor = 1 - dist_from_player / detection_length
+            direction *= 1 - evade_factor
+            direction += self.evade(self.world.player) * evade_factor * 25
+
+        direction += self.avoid_obstacles()
+
         self.velocity += direction
         self.move()
         self.update_angle_from_heading()
@@ -28,7 +38,9 @@ class Zombie(Actor):
         if self.world.debug_mode:
             pt = self.world.camera.offset(self.pos)
             pygame.draw.circle(self.world.screen, COLOR_WHITE, (int(pt.x), int(pt.y)), 3)
-            self.world.screen.blit(self.debug_text, (int(pt.x), int(pt.y)))
+
+            pt2 = pt + self.avoid_obstacles()
+            pygame.draw.line(self.world.screen, COLOR_RED, (int(pt.x), int(pt.y)), (int(pt2.x), int(pt2.y)))
 
     def kill(self):
         self.world.enemies.remove(self)

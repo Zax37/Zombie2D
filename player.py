@@ -6,6 +6,7 @@ PLAYER_IMAGE = pygame.image.load('player.png')
 PLAYER_MAX_SPEED = 10
 SPEED_CHANGE_CONST = .2
 ROTATION_SPEED = .1
+COLOR_RED = (255, 0, 0)
 COLOR_WHITE = (255, 255, 255)
 SHOOT_DELAY = 500
 
@@ -47,10 +48,12 @@ class Player(Actor):
             self.shoot()
 
         mouse_pos = pygame.mouse.get_pos()
-        center = self.pos + mouse_pos - pygame.math.Vector2(self.world.screen.get_size()) / 2
+        center = self.pos + mouse_pos - self.world.camera.offset(self.pos)
 
         self.look_at(center)
-        self.world.camera.move_towards(center)
+
+        if not self.world.debug_mode:
+            self.world.camera.move_towards(center)
 
     def draw(self):
         Actor.draw(self)
@@ -58,3 +61,7 @@ class Player(Actor):
             action_point_rotated = self.action_point.rotate(self.angle)
             point = self.world.camera.offset(self.pos + action_point_rotated)
             pygame.draw.circle(self.world.screen, COLOR_WHITE, (int(point.x), int(point.y)), 3)
+            if self.tagged:
+                pt = self.world.camera.offset(self.pos)
+                pygame.draw.circle(self.world.screen, COLOR_RED, (int(pt.x), int(pt.y)),
+                                   int(self.size * self.world.camera.zoom))

@@ -2,7 +2,7 @@ import pygame
 
 
 class Camera:
-    def __init__(self, world, x, y):
+    def __init__(self, world, x=0, y=0):
         self.world = world
         self.pos = pygame.math.Vector2(x, y)
         self.zoom = 0.4
