@@ -22,7 +22,7 @@ class Zombie(Actor):
 
         self.world.player.tagged = False
         if dist_from_player < detection_length:
-            self.world.player.tagged = True
+            self.world.player.tag()
             evade_factor = 1 - dist_from_player / detection_length
             direction *= 1 - evade_factor
             direction += self.evade(self.world.player) * evade_factor * 25

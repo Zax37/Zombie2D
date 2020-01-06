@@ -61,7 +61,8 @@ class Player(Actor):
             action_point_rotated = self.action_point.rotate(self.angle)
             point = self.world.camera.offset(self.pos + action_point_rotated)
             pygame.draw.circle(self.world.screen, COLOR_WHITE, (int(point.x), int(point.y)), 3)
-            if self.tagged:
+            if self.was_tagged:
                 pt = self.world.camera.offset(self.pos)
                 pygame.draw.circle(self.world.screen, COLOR_RED, (int(pt.x), int(pt.y)),
                                    int(self.size * self.world.camera.zoom))
+                self.was_tagged = False

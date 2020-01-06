@@ -7,6 +7,7 @@ class Entity:
         self.pos = pygame.math.Vector2(x, y)
         self.angle = 0
         self.tagged = False
+        self.was_tagged = False
         self.heading = pygame.math.Vector2(1, 0)
         self.side = pygame.math.Vector2(0, -1)
         self.velocity = pygame.math.Vector2(0, 0)
@@ -15,6 +16,10 @@ class Entity:
             self.image = image
             rect = image.get_rect()
             self.offset = pygame.math.Vector2(pivot[0] - rect.center[0], pivot[1] - rect.center[1])
+
+    def tag(self):
+        self.tagged = True
+        self.was_tagged = True
 
     def draw(self):
         rotated_image = pygame.transform.rotozoom(self.image, -self.angle, self.world.camera.zoom)

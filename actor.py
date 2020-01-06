@@ -31,9 +31,9 @@ class Actor(Entity):
         for entity in (self.world.obstacles + self.world.enemies):
             entity.tagged = False
             to = self.pos - entity.pos
-            detection_length = self.get_detection_box_length()
+            detection_length = self.get_detection_box_length() + entity.size
             if entity != self and to.length_squared() < detection_length ** 2:
-                entity.tagged = True
+                entity.tag()
 
     def draw(self):
         Entity.draw(self)

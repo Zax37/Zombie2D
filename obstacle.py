@@ -14,6 +14,7 @@ class Obstacle(Entity):
         pt = self.world.camera.offset(self.pos)
         pygame.draw.circle(self.world.screen, COLOR_BLACK, (int(pt.x), int(pt.y)),
                            int(self.size * self.world.camera.zoom))
-        if self.world.debug_mode and self.tagged:
+        if self.world.debug_mode and self.was_tagged:
             pygame.draw.circle(self.world.screen, COLOR_RED, (int(pt.x), int(pt.y)),
                                int(self.size * self.world.camera.zoom))
+            self.was_tagged = False
