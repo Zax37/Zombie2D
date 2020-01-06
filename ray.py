@@ -3,19 +3,32 @@ import pygame
 import pygame.gfxdraw
 
 
-class BulletRay:
-    def __init__(self, world, source, angle):
+class Ray:
+    def __init__(self, world, source, angle=None, target=None):
         self.world = world
         self.source = source
-        rads = angle * math.pi / 180.0
-        self.length = sum(self.world.world_size)
-        self.target = pygame.math.Vector2(math.floor(source.x + self.length * math.cos(rads)),
-                                          math.floor(source.y + self.length * math.sin(rads)))
+
+        if target is not None:
+            self.target = target
+            self.length = (self.target - self.source).length()
+        elif angle is not None:
+            rads = angle * math.pi / 180.0
+            self.length = sum(self.world.world_size)
+            self.target = pygame.math.Vector2(math.floor(source.x + self.length * math.cos(rads)),
+                                              math.floor(source.y + self.length * math.sin(rads)))
+        else:
+            self.target = self.source
+            self.length = 0
+
         self.opacity = 255
 
-        self.limit_by_rect(pygame.Rect((0, 0), world.world_size))
+    def limit_to_play_area(self):
+        self.limit_by_rect(pygame.Rect((0, 0), self.world.world_size))
 
-        for obstacle in world.obstacles:
+    def shoot(self):
+        self.limit_to_play_area()
+
+        for obstacle in self.world.obstacles:
             intersection_point = self.get_intersection_point(obstacle)
             if intersection_point:
                 self.target = intersection_point
@@ -23,13 +36,17 @@ class BulletRay:
 
         close_enemy = None
 
-        for enemy in world.enemies:
+        for enemy in self.world.enemies:
             intersection_point = self.get_intersection_point(enemy)
             if intersection_point:
                 self.target = intersection_point
                 self.length = (self.target - self.source).length()
                 close_enemy = enemy
 
+        return close_enemy
+
+    def shoot_to_kill(self):
+        close_enemy = self.shoot()
         if close_enemy is not None:
             close_enemy.kill()
 

@@ -1,6 +1,6 @@
 import pygame
 from actor import Actor
-from bulletray import BulletRay
+from ray import Ray
 
 PLAYER_IMAGE = pygame.image.load('player.png')
 PLAYER_MAX_SPEED = 10
@@ -21,7 +21,9 @@ class Player(Actor):
 
     def shoot(self):
         action_point_rotated = self.action_point.rotate(self.angle)
-        self.world.bullets.append(BulletRay(self.world, self.pos + action_point_rotated, self.angle))
+        bullet = Ray(self.world, self.pos + action_point_rotated, angle=self.angle)
+        bullet.shoot_to_kill()
+        self.world.bullets.append(bullet)
         self.shoot_timeout = SHOOT_DELAY
 
     def update(self, time_elapsed):

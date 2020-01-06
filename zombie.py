@@ -17,17 +17,17 @@ class Zombie(Actor):
     def update(self, time_elapsed):
         direction = self.wander()
 
-        detection_length = self.get_detection_box_length()
+        player_detection_length = self.get_detection_box_length() + self.world.player.size
         dist_from_player = (self.pos - self.world.player.pos).length()
 
         self.world.player.tagged = False
-        if dist_from_player < detection_length:
+        if dist_from_player < player_detection_length:
             self.world.player.tag()
-            evade_factor = 1 - dist_from_player / detection_length
+            evade_factor = 1 - dist_from_player / player_detection_length
             direction *= 1 - evade_factor
             direction += self.evade(self.world.player) * evade_factor * 25
 
-        direction += self.avoid_obstacles()
+        direction += self.avoid_obstacles() + self.avoid_walls()
 
         self.velocity += direction
         self.move()
@@ -41,6 +41,12 @@ class Zombie(Actor):
 
             pt2 = pt + self.avoid_obstacles()
             pygame.draw.line(self.world.screen, COLOR_RED, (int(pt.x), int(pt.y)), (int(pt2.x), int(pt2.y)))
+
+            if self.wall_avoidance_ray:
+                self.wall_avoidance_ray.draw()
+                pt3 = self.wall_avoidance_ray.target
+                pt4 = pt3 + self.avoid_walls()
+                pygame.draw.line(self.world.screen, COLOR_RED, (int(pt3.x), int(pt3.y)), (int(pt4.x), int(pt4.y)))
 
     def kill(self):
         self.world.enemies.remove(self)

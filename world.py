@@ -26,7 +26,7 @@ class World:
         self.wall_width = 8
 
         gen_grid_size = 512
-        half_grid_size = gen_grid_size / 2
+        half_grid_size = gen_grid_size / 4
         gen_w = int(world_size[0] / gen_grid_size)
         gen_h = int(world_size[1] / gen_grid_size)
 

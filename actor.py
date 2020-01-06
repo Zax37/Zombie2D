@@ -2,6 +2,7 @@ import math
 import pygame
 import random
 from entity import Entity
+from ray import Ray
 
 COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (255, 255, 255)
@@ -23,6 +24,7 @@ class Actor(Entity):
         self.wander_jitter = 40.0
         self.wander_target = pygame.math.Vector2(self.wander_radius * math.cos(theta),
                                                  self.wander_radius * math.sin(theta))
+        self.wall_avoidance_ray = None
 
     def get_detection_box_length(self):
         return MIN_DETECTION_BOX_LENGTH * (1 + self.velocity.length() / self.max_speed) + BODY_RADIUS
@@ -153,3 +155,36 @@ class Actor(Entity):
             steering_force.y = (closest_intersecting_obstacle.size - local_pos_of_closest_obstacle.y) * multiplier
 
         return self.local_vector_to_world(steering_force)
+
+    def avoid_walls(self):
+        detection_length = self.get_detection_box_length() + self.world.wall_width
+        detection_vector = self.heading * detection_length
+        ray = Ray(self.world, self.pos, target=self.pos + detection_vector)
+
+        irx = ray.target.x
+        iry = ray.target.y
+
+        avoid_direction = pygame.math.Vector2(0, 0)
+        penetration_depth = 0
+
+        ray.limit_to_play_area()
+        if ray.target.x == irx and ray.target.y == iry:  # no wall in range
+            self.wall_avoidance_ray = None
+            return avoid_direction
+
+        self.wall_avoidance_ray = ray
+
+        if ray.target.x == 0:
+            avoid_direction.x = 1
+            penetration_depth = -irx
+        elif ray.target.x == self.world.world_size[0]:
+            avoid_direction.x = -1
+            penetration_depth = irx - ray.target.x
+        elif ray.target.y == 0:
+            avoid_direction.y = 1
+            penetration_depth = -iry
+        elif ray.target.y == self.world.world_size[1]:
+            avoid_direction.y = -1
+            penetration_depth = iry - ray.target.y
+
+        return avoid_direction * penetration_depth
