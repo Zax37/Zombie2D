@@ -8,8 +8,8 @@ pygame.font.init()
 DEFAULT_FONT = pygame.font.SysFont('Consolas', 12)
 
 screen = pygame.display.set_mode((800, 600))
-world_size = (screen.get_width() * 3, screen.get_height() * 3)
-world = World(screen, world_size, start_pos=(150, 100), debug_font=DEFAULT_FONT)
+world_size = (screen.get_width() * 4, screen.get_height() * 4)
+world = World(screen, world_size, start_pos=(270, 120), debug_font=DEFAULT_FONT)
 
 done = False
 while not done:

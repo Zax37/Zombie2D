@@ -5,7 +5,7 @@ from entity import Entity
 
 COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (255, 255, 255)
-BODY_RADIUS = 50
+BODY_RADIUS = 70
 MIN_DETECTION_BOX_LENGTH = 100
 
 

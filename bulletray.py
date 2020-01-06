@@ -8,10 +8,12 @@ class BulletRay:
         self.world = world
         self.source = source
         rads = angle * math.pi / 180.0
-        self.length = int(sum(self.world.screen.get_size()) / world.camera.zoom)
+        self.length = sum(self.world.world_size)
         self.target = pygame.math.Vector2(math.floor(source.x + self.length * math.cos(rads)),
                                           math.floor(source.y + self.length * math.sin(rads)))
         self.opacity = 255
+
+        self.limit_by_rect(pygame.Rect((0, 0), world.world_size))
 
         for obstacle in world.obstacles:
             intersection_point = self.get_intersection_point(obstacle)
@@ -39,13 +41,13 @@ class BulletRay:
             return None
 
         dir_vector = (self.target - self.source).normalize()
-        dist = (self.source - target.pos)
+        to_target = (self.source - target.pos)
 
-        if dist.length() > self.length:
+        if to_target.length() - target.size > self.length:
             return None
 
-        lf = dir_vector.dot(dist)
-        s = target.size ** 2 - dist.length_squared() + lf ** 2
+        lf = dir_vector.dot(to_target)
+        s = target.size ** 2 - to_target.length_squared() + lf ** 2
 
         if s < 0:
             return None
@@ -66,3 +68,35 @@ class BulletRay:
         tgt = self.world.camera.offset(self.target)
         src = self.world.camera.offset(self.source) * (1 - progress) + tgt * progress
         pygame.gfxdraw.line(self.world.screen, int(src.x), int(src.y), int(tgt.x), int(tgt.y), (255, 255, 255, self.opacity))
+
+    def limit_by_rect(self, rect):
+        dir_vector = (self.target - self.source).normalize()
+
+        if abs(dir_vector.x) <= 0.001:  # avoid extreme cases with vertical lines
+            if self.source.x < rect[0] or self.source.x > rect[2]:
+                return  # no intersection
+
+            if dir_vector.y > 0:
+                self.target.y = min(self.target.y, rect[3])
+            else:
+                self.target.y = max(self.target.y, rect[1])
+            self.target.x = self.source.x
+        else:
+            slope = dir_vector.y / dir_vector.x
+            intercept = self.source.y - slope * self.source.x
+
+            if self.target.x < rect[0]:
+                self.target.x = rect[0]
+                self.target.y = slope * self.target.x + intercept
+            elif self.target.x > rect[2]:
+                self.target.x = rect[2]
+                self.target.y = slope * self.target.x + intercept
+
+            if self.target.y < rect[1]:
+                self.target.y = rect[1]
+                self.target.x = (self.target.y - intercept) / slope
+            elif self.target.y > rect[3]:
+                self.target.y = rect[3]
+                self.target.x = (self.target.y - intercept) / slope
+
+        self.length = (self.target - self.source).length()
