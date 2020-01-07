@@ -23,7 +23,7 @@ class Ray:
         self.opacity = 255
 
     def limit_to_play_area(self):
-        self.limit_by_rect(pygame.Rect((0, 0), self.world.world_size))
+        self.limit_by_rect(self.world.get_wall_inner_rect())
 
     def shoot(self):
         self.limit_to_play_area()

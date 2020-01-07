@@ -1,11 +1,13 @@
 import pygame
 from actor import Actor
+from entity import Entity
 from ray import Ray
 
 PLAYER_IMAGE = pygame.image.load('player.png')
+DEAD_IMAGE = pygame.image.load('blood.png')
 PLAYER_MAX_SPEED = 10
 SPEED_CHANGE_CONST = .2
-ROTATION_SPEED = .1
+ROTATION_SPEED = 40
 COLOR_RED = (255, 0, 0)
 COLOR_WHITE = (255, 255, 255)
 SHOOT_DELAY = 500
@@ -25,6 +27,14 @@ class Player(Actor):
         bullet.shoot_to_kill()
         self.world.bullets.append(bullet)
         self.shoot_timeout = SHOOT_DELAY
+
+    def hurt(self):
+        self.health -= 1
+        if self.health <= 0:
+            self.world.player = None
+            blood = Entity(self.world, self.pos.x, self.pos.y, DEAD_IMAGE, (125, 115))
+            blood.angle = self.angle
+            self.world.misc.append(blood)
 
     def update(self, time_elapsed):
         pressed = pygame.key.get_pressed()
