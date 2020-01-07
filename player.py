@@ -5,7 +5,7 @@ from ray import Ray
 
 PLAYER_IMAGE = pygame.image.load('player.png')
 DEAD_IMAGE = pygame.image.load('blood.png')
-PLAYER_MAX_SPEED = 10
+PLAYER_MAX_SPEED = 7
 SPEED_CHANGE_CONST = .2
 ROTATION_SPEED = 40
 COLOR_RED = (255, 0, 0)
@@ -64,8 +64,8 @@ class Player(Actor):
 
         self.look_at(center)
 
-        if not self.world.debug_mode:
-            self.world.camera.move_towards(center)
+        # if not self.world.debug_mode:
+        #     self.world.camera.move_towards(center)
 
     def draw(self):
         Actor.draw(self)

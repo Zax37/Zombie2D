@@ -8,7 +8,7 @@ from ray import Ray
 COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (255, 255, 255)
 BODY_RADIUS = 70
-MIN_DETECTION_BOX_LENGTH = 150
+MIN_DETECTION_BOX_LENGTH = 180
 
 
 class Actor(Entity):
@@ -25,7 +25,6 @@ class Actor(Entity):
         self.wander_jitter = 40.0
         self.wander_target = pygame.math.Vector2(self.wander_radius * math.cos(theta),
                                                  self.wander_radius * math.sin(theta))
-        self.wall_avoidance_ray = None
 
     def get_detection_box_length(self):
         return MIN_DETECTION_BOX_LENGTH * (1 + self.velocity.length() / self.max_speed) + self.size
@@ -205,10 +204,8 @@ class Actor(Entity):
 
         ray.limit_to_play_area()
         if ray.target.x == irx and ray.target.y == iry:  # no wall in range
-            self.wall_avoidance_ray = None
             return avoid_direction
 
-        self.wall_avoidance_ray = ray
         wall_inner_rect = self.world.get_wall_inner_rect()
 
         if ray.target.x == wall_inner_rect[0]:
